@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.mapper.WorkMapper">
+
+    <select id="list" resultType="com.itheima.pojo.Work">
+        SELECT w.*, c.title as competition_title, u.real_name as student_name, t.name as team_name,
+               (SELECT AVG(score) FROM scoring s WHERE s.work_id = w.id) as average_score
+        FROM work w
+        LEFT JOIN competition c ON w.competition_id = c.id
+        LEFT JOIN user u ON w.student_id = u.id
+        LEFT JOIN team t ON w.team_id = t.id
+        <where>
+            <if test="competitionId != null">
+                AND w.competition_id = #{competitionId}
+            </if>
+            <if test="studentId != null">
+                AND w.student_id = #{studentId}
+            </if>
+            <if test="status != null and status != ''">
+                AND w.status = #{status}
+            </if>
+        </where>
+        ORDER BY w.submit_time DESC
+    </select>
+
+    <insert id="insert" parameterType="com.itheima.pojo.Work" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO work (competition_id, registration_id, student_id, team_id, title, description, file_url, file_name, status)
+        VALUES (#{competitionId}, #{registrationId}, #{studentId}, #{teamId}, #{title}, #{description}, #{fileUrl}, #{fileName}, #{status})
+    </insert>
+
+    <update id="update" parameterType="com.itheima.pojo.Work">
+        UPDATE work
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="fileUrl != null">file_url = #{fileUrl},</if>
+            <if test="fileName != null">file_name = #{fileName},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM work WHERE id = #{id}
+    </delete>
+
+</mapper>

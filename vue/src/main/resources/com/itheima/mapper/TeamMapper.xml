@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.mapper.TeamMapper">
+
+    <select id="list" resultType="com.itheima.pojo.Team">
+        SELECT t.*, c.title as competition_title, u.real_name as leader_name,
+               (SELECT COUNT(*) FROM team_member tm WHERE tm.team_id = t.id) as current_members
+        FROM team t
+        LEFT JOIN competition c ON t.competition_id = c.id
+        LEFT JOIN user u ON t.leader_id = u.id
+        <where>
+            <if test="competitionId != null">
+                AND t.competition_id = #{competitionId}
+            </if>
+            <if test="status != null and status != ''">
+                AND t.status = #{status}
+            </if>
+        </where>
+        ORDER BY t.create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="com.itheima.pojo.Team" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO team (competition_id, name, leader_id, max_members, status)
+        VALUES (#{competitionId}, #{name}, #{leaderId}, #{maxMembers}, #{status})
+    </insert>
+
+    <update id="update" parameterType="com.itheima.pojo.Team">
+        UPDATE team
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="maxMembers != null">max_members = #{maxMembers},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM team WHERE id = #{id}
+    </delete>
+
+</mapper>

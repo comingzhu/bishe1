@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.mapper.RegistrationMapper">
+
+    <select id="list" resultType="com.itheima.pojo.Registration">
+        SELECT r.*, c.title as competition_title, u.real_name as student_name, u.student_id as student_id_str,
+               t.name as team_name, c.fee
+        FROM registration r
+        LEFT JOIN competition c ON r.competition_id = c.id
+        LEFT JOIN user u ON r.student_id = u.id
+        LEFT JOIN team t ON r.team_id = t.id
+        <where>
+            <if test="competitionId != null">
+                AND r.competition_id = #{competitionId}
+            </if>
+            <if test="status != null and status != ''">
+                AND r.status = #{status}
+            </if>
+        </where>
+        ORDER BY r.registration_time DESC
+    </select>
+
+    <insert id="insert" parameterType="com.itheima.pojo.Registration" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO registration (competition_id, student_id, team_id, status, remark)
+        VALUES (#{competitionId}, #{studentId}, #{teamId}, #{status}, #{remark})
+    </insert>
+
+    <update id="update" parameterType="com.itheima.pojo.Registration">
+        UPDATE registration
+        <set>
+            <if test="status != null">status = #{status},</if>
+            <if test="auditTime != null">audit_time = #{auditTime},</if>
+            <if test="auditorId != null">auditor_id = #{auditorId},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM registration WHERE id = #{id}
+    </delete>
+
+    <select id="findByIdWithAward" resultType="com.itheima.pojo.Registration">
+        SELECT r.*, c.title as competition_title, u.real_name as student_name, u.student_id as student_id_str,
+               t.name as team_name, c.fee,
+               a.id as award_id, a.award_level, a.award_name, a.score as award_score, a.ranking, a.award_time
+        FROM registration r
+        LEFT JOIN competition c ON r.competition_id = c.id
+        LEFT JOIN user u ON r.student_id = u.id
+        LEFT JOIN team t ON r.team_id = t.id
+        LEFT JOIN award a ON r.id = a.registration_id
+        WHERE r.id = #{id}
+    </select>
+
+</mapper>

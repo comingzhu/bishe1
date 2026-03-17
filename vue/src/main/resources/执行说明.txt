@@ -1,0 +1,46 @@
+============================================
+数据库表结构执行说明
+============================================
+
+由于编码问题，建议您手动执行SQL脚本。
+
+方法一：使用MySQL命令行工具
+----------------------------------------
+1. 打开命令提示符（CMD）或PowerShell
+2. 切换到SQL文件所在目录：
+   cd D:\hhh\tlias-web-management\src\main\resources
+3. 执行以下命令：
+   mysql -u root -pzwj520 tlias < db_schema.sql
+
+方法二：使用MySQL客户端工具（推荐）
+----------------------------------------
+1. 打开Navicat、MySQL Workbench、phpMyAdmin等MySQL客户端工具
+2. 连接到数据库（localhost:3306，用户名：root，密码：zwj520）
+3. 选择数据库：tlias
+4. 打开SQL文件：db_schema.sql
+5. 执行SQL脚本
+
+方法三：使用批处理文件
+----------------------------------------
+1. 双击执行：execute_sql.bat
+2. 注意：如果MySQL未添加到系统PATH，需要修改批处理文件中的mysql路径
+
+执行后，将创建以下表：
+- role（角色表）
+- user（用户表）
+- user_role（用户角色关联表）
+- competition（竞赛表）
+- registration（报名表）
+- team_member（团队成员表）
+- work（作品表）
+- score（评分表）
+- award（获奖记录表）
+- operate_log（操作日志表）
+
+同时会自动初始化：
+- 4个角色（学生、老师、管理员、评审员）
+- 1个默认管理员账号（用户名：admin，密码：admin123）
+
+注意：实际使用时，请将admin密码加密存储！
+
+

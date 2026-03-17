@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.mapper.PaymentMapper">
+
+    <select id="list" resultType="com.itheima.pojo.Payment">
+        SELECT p.*, c.title as competition_title, u.real_name as student_name, u.student_id as student_id_str
+        FROM payment p
+        LEFT JOIN registration r ON p.registration_id = r.id
+        LEFT JOIN competition c ON r.competition_id = c.id
+        LEFT JOIN user u ON p.student_id = u.id
+        <where>
+            <if test="registrationId != null">
+                AND p.registration_id = #{registrationId}
+            </if>
+            <if test="studentId != null">
+                AND p.student_id = #{studentId}
+            </if>
+            <if test="status != null and status != ''">
+                AND p.status = #{status}
+            </if>
+        </where>
+        ORDER BY p.create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="com.itheima.pojo.Payment" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO payment (registration_id, student_id, amount, status)
+        VALUES (#{registrationId}, #{studentId}, #{amount}, #{status})
+    </insert>
+
+    <update id="update" parameterType="com.itheima.pojo.Payment">
+        UPDATE payment
+        <set>
+            <if test="status != null">status = #{status},</if>
+            <if test="paymentTime != null">payment_time = #{paymentTime},</if>
+            <if test="paymentMethod != null">payment_method = #{paymentMethod},</if>
+            <if test="transactionId != null">transaction_id = #{transactionId},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM payment WHERE id = #{id}
+    </delete>
+
+</mapper>
